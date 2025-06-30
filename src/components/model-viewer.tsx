@@ -8,6 +8,17 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { cn } from '@/lib/utils';
 import { Loader2, AlertTriangle, Box } from 'lucide-react';
 
+// More aggressive device performance detection, moved outside component
+const isLowEndDevice = () => {
+  if (typeof window === 'undefined') return false;
+  // considers low core count, smaller screens (tablets/phones), and mobile user agents
+  return (
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    window.innerWidth < 1024 ||
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  );
+};
+
 type ModelViewerProps = {
   modelUrls: string[];
   className?: string;
@@ -16,18 +27,11 @@ type ModelViewerProps = {
 
 const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoaded }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<OrbitControls | null>(null); // Ref to hold controls object
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Animations are now enabled by default for all devices
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
-
-  // Device performance detection
-  const isLowEndDevice = () => {
-    return (
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) ||
-      window.innerWidth < 768 ||
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    );
-  };
 
   useEffect(() => {
     if (!modelUrls || modelUrls.length === 0) {
@@ -108,9 +112,10 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
 
       // Controls
       const controls = new OrbitControls(camera, renderer.domElement);
+      controlsRef.current = controls; // Store controls in ref
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.autoRotate = true;
+      controls.autoRotate = animationsEnabled; // Control rotation with state
       controls.autoRotateSpeed = 1;
 
       // Model Loader
@@ -181,9 +186,14 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
       // Animation loop with performance-optimized bouncing
       const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
+
+        // Update auto-rotate based on the toggle state
+        if (controls) {
+          controls.autoRotate = animationsEnabled;
+        }
         
         // Performance-optimized bouncing animation for the apple
-        if (allModels.children.length > 0 && animationsEnabled && !isLowEndDevice()) {
+        if (allModels.children.length > 0 && animationsEnabled) {
           const apple = allModels.children[0];
           const time = Date.now() * 0.001;
           const bounceHeight = Math.sin(time * 1) * 0.2; // Reduced frequency and amplitude for performance
@@ -222,6 +232,13 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
     }
   }, [modelUrls]);
 
+  // This new effect handles toggling animations ON/OFF
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.autoRotate = animationsEnabled;
+    }
+  }, [animationsEnabled]);
+
   return (
     <div
       className={cn("relative w-full h-full border-2 border-dashed rounded-lg overflow-hidden bg-muted/40 shadow-inner", className)}
@@ -233,7 +250,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
         onClick={() => setAnimationsEnabled(!animationsEnabled)}
         className="absolute top-4 right-4 z-10 px-3 py-1 text-xs bg-black/50 text-white rounded-md hover:bg-black/70 transition-colors"
       >
-        {animationsEnabled ? "Performance Mode" : "Quality Mode"}
+        {animationsEnabled ? "Disable Animations" : "Enable Animations"}
       </button>
       
       {isLoading && (
