@@ -18,6 +18,16 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
   const mountRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
+
+  // Device performance detection
+  const isLowEndDevice = () => {
+    return (
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) ||
+      window.innerWidth < 768 ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    );
+  };
 
   useEffect(() => {
     if (!modelUrls || modelUrls.length === 0) {
@@ -43,19 +53,57 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
     try {
       // Scene
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x87ceeb);
-      scene.fog = new THREE.Fog(0x87ceeb, 10, 50);
+      scene.background = new THREE.Color(0x2c1810); // Warm chocolate brown background for aesthetic appeal
+      scene.fog = new THREE.Fog(0x2c1810, 10, 50);
+
+      // 5 Lighting sources for enhanced visual quality
+      // Ambient light for overall illumination
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+      scene.add(ambientLight);
+      
+      // Main directional light for shadows and depth
+      const directionalLight = new THREE.DirectionalLight(0xfffaf0, 1.0); // Warm sunlight
+      directionalLight.position.set(10, 15, 10);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = 1024;
+      directionalLight.shadow.mapSize.height = 1024;
+      directionalLight.shadow.camera.near = 0.5;
+      directionalLight.shadow.camera.far = 50;
+      scene.add(directionalLight);
+
+      // Fill light from opposite side
+      const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.5); // Soft blue fill light
+      fillLight.position.set(-8, 8, -8);
+      scene.add(fillLight);
+
+      // Rim light for edge definition
+      const rimLight = new THREE.DirectionalLight(0xffe4b5, 0.6); // Warm rim light
+      rimLight.position.set(0, 5, -15);
+      scene.add(rimLight);
+
+      // Point light for intimate glow
+      const pointLight = new THREE.PointLight(0xffd700, 0.7, 20); // Golden point light
+      pointLight.position.set(5, 3, 5);
+      scene.add(pointLight);
 
       // Camera
       const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-      camera.position.z = 5;
+      camera.position.z = 20; // Pull camera much further out initially
 
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
+      // Renderer with performance-based optimization
+      const lowEnd = isLowEndDevice();
+      renderer = new THREE.WebGLRenderer({ 
+        antialias: !lowEnd, 
+        powerPreference: lowEnd ? "low-power" : "high-performance",
+        alpha: true
+      });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
-      renderer.shadowMap.enabled = true;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowEnd ? 1 : 2));
+      renderer.shadowMap.enabled = !lowEnd;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = lowEnd ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = lowEnd ? 1.0 : 1.1;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
       currentMount.appendChild(renderer.domElement);
 
       // Controls
@@ -64,28 +112,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
       controls.dampingFactor = 0.05;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 1;
-
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-      scene.add(ambientLight);
-      
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
-      directionalLight.position.set(5, 10, 7.5);
-      directionalLight.castShadow = true;
-      directionalLight.shadow.mapSize.width = 512;
-      directionalLight.shadow.mapSize.height = 512;
-      directionalLight.shadow.camera.near = 0.5;
-      directionalLight.shadow.camera.far = 50;
-      scene.add(directionalLight);
-
-      // Ground plane
-      const ground = new THREE.Mesh(
-          new THREE.PlaneGeometry(100, 100),
-          new THREE.ShadowMaterial({ opacity: 0.3 })
-      );
-      ground.rotation.x = -Math.PI / 2;
-      ground.receiveShadow = true;
-      scene.add(ground);
 
       // Model Loader
       const loader = new GLTFLoader();
@@ -115,15 +141,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
                 }
               });
 
-              // If this is the first model (grass), scale it up and center it
-              if (i === 0) {
-                model.scale.set(15, 15, 15); // Enlarge the grass to cover the full screen
-                model.position.set(0, 0, 0); // Center the grass
-              } else if (i === 1) {
-                // Enlarge the house and place it just on the grass
-                model.scale.set(2.5, 2.5, 2.5); // Enlarge the house
-                model.position.set(0, 1, 0); // Lower the house to sit just on the grass
-              }
+              // Position and scale the Kashmiri apple model
+              model.scale.set(3, 3, 3); // Scale the apple appropriately
+              model.position.set(0, 0, 0); // Center the apple
 
               allModels.add(model);
               modelsLoaded++;
@@ -139,14 +159,11 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
                   const maxDim = Math.max(size.x, size.y, size.z);
                   const fov = camera.fov * (Math.PI / 180);
                   let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-                  cameraZ *= 0.45; // Zoom in more so grass fills the segment
+                  cameraZ *= 2.5; // Pull camera much further out for very wide view
                   camera.position.set(0, cameraZ / 2, cameraZ);
                   controls.target.set(0, 0, 0);
 
                   controls.update();
-
-                  // Adjust ground plane position
-                  ground.position.y = box.min.y - center.y;
 
                   setIsLoading(false);
                   if (onLoaded) onLoaded();
@@ -161,9 +178,18 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
           );
       });
 
-      // Animation loop
+      // Animation loop with performance-optimized bouncing
       const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
+        
+        // Performance-optimized bouncing animation for the apple
+        if (allModels.children.length > 0 && animationsEnabled && !isLowEndDevice()) {
+          const apple = allModels.children[0];
+          const time = Date.now() * 0.001;
+          const bounceHeight = Math.sin(time * 1) * 0.2; // Reduced frequency and amplitude for performance
+          apple.position.y = bounceHeight;
+        }
+        
         controls.update();
         renderer.render(scene, camera);
       };
@@ -201,6 +227,15 @@ const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrls, className, onLoade
       className={cn("relative w-full h-full border-2 border-dashed rounded-lg overflow-hidden bg-muted/40 shadow-inner", className)}
     >
       <div ref={mountRef} className="w-full h-full outline-none"></div>
+      
+      {/* Performance Toggle Button */}
+      <button
+        onClick={() => setAnimationsEnabled(!animationsEnabled)}
+        className="absolute top-4 right-4 z-10 px-3 py-1 text-xs bg-black/50 text-white rounded-md hover:bg-black/70 transition-colors"
+      >
+        {animationsEnabled ? "Performance Mode" : "Quality Mode"}
+      </button>
+      
       {isLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />

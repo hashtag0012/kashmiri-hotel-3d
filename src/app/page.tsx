@@ -50,8 +50,7 @@ export default function AppleHavenInn() {
             <Suspense fallback={<div>Loading 3D Scene...</div>}>
               <ModelViewer
                 modelUrls={[
-                  "/models/countryside/Create_a_3D_environme_0625124202_texture.glb", // houses
-                  "/models/countryside/Design_a_3D_scene_wit_0625125529_texture.glb"  // grass
+                  "/models/countryside/kashmiri_apple_very_r_0629101439_texture.glb" // Kashmiri apple
                 ]}
                 onLoaded={handleModelLoaded}
               />
