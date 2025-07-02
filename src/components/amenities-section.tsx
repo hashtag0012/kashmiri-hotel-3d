@@ -119,4 +119,4 @@ export function AmenitiesSection() {
       </div>
     </section>
   )
-} 
+}
