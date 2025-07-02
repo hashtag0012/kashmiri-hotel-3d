@@ -10,7 +10,7 @@ export function ContactSection() {
   const sectionTitle = [
     {
       text: "Contact Us",
-      className: "text-5xl font-bold bg-gradient-to-r from-red-600 via-orange-400 to-emerald-500 bg-clip-text text-transparent mb-4 font-display"
+      className: "text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-4 font-display animate-fade-in-down"
     },
   ]
 
@@ -22,7 +22,7 @@ export function ContactSection() {
         alt="Contact Us Background"
         layout="fill"
         objectFit="cover"
-        className="z-0 opacity-30"
+        className="z-0 opacity-30 animate-fade-in"
         priority
       />
       <div className="absolute inset-0 bg-black/40 z-0" />
@@ -30,7 +30,7 @@ export function ContactSection() {
         {/* Header */}
         <div className="text-center mb-16">
           <MultiLineTypewriter lines={sectionTitle} loop={false} />
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up animate-delay-300">
             Get in touch with us for reservations, inquiries, or to plan your perfect Kashmir getaway. Our team is here
             to help make your stay unforgettable.
           </p>
@@ -39,12 +39,12 @@ export function ContactSection() {
         {/* Centered Hotel Information */}
         <div className="max-w-4xl mx-auto mb-16">
           {/* Hotel Information */}
-          <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-8">
+          <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-8 animate-scale-in animate-delay-500">
             <CardHeader>
               <CardTitle className="text-3xl text-red-800 text-center">Hotel Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-left animate-delay-700">
                 <MapPin className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">Address</h3>
@@ -58,7 +58,7 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-right animate-delay-700">
                 <Phone className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">Phone</h3>
@@ -67,7 +67,7 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-left animate-delay-1000">
                 <Mail className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">Email</h3>
@@ -75,7 +75,7 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-right animate-delay-1000">
                 <Clock className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">Reception Hours</h3>
@@ -88,12 +88,12 @@ export function ContactSection() {
           </Card>
 
           {/* Getting Here */}
-          <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-8">
+          <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-8 animate-scale-in animate-delay-700">
             <CardHeader>
               <CardTitle className="text-3xl text-red-800 text-center">Getting Here</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-up animate-delay-1000">
                 <Plane className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">By Air</h3>
@@ -105,7 +105,7 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 animate-fade-in-up animate-delay-1000">
                 <Car className="w-6 h-6 text-red-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-red-800">By Road</h3>
@@ -122,20 +122,20 @@ export function ContactSection() {
           </Card>
 
           {/* Emergency Contacts */}
-          <Card className="shadow-xl border-0 bg-gradient-to-r from-red-600 to-orange-500 text-white">
+          <Card className="shadow-xl border-0 bg-gradient-to-r from-red-600 to-orange-500 text-white animate-scale-in animate-delay-1000">
             <CardHeader>
               <CardTitle className="text-3xl text-center">Emergency Contacts</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
+              <div className="animate-fade-in-up animate-delay-1000">
                 <h3 className="font-semibold">24/7 Emergency Hotline</h3>
                 <p className="text-orange-100">+91 194 xxx xxxx</p>
               </div>
-              <div>
+              <div className="animate-fade-in-up animate-delay-1000">
                 <h3 className="font-semibold">Local Police</h3>
                 <p className="text-orange-100">100</p>
               </div>
-              <div>
+              <div className="animate-fade-in-up animate-delay-1000">
                 <h3 className="font-semibold">Medical Emergency</h3>
                 <p className="text-orange-100">108</p>
               </div>
@@ -145,4 +145,4 @@ export function ContactSection() {
       </div>
     </div>
   )
-} 
+}

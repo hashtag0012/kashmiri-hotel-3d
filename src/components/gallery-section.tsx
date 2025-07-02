@@ -99,7 +99,7 @@ export function GallerySection() {
   const sectionTitle = [
     {
       text: "Photo Gallery",
-      className: "text-5xl font-bold mb-4 font-display",
+      className: "text-5xl font-bold mb-4 font-display animate-fade-in-down",
       style: { color: '#991b1b' }
     },
   ]
@@ -157,7 +157,7 @@ export function GallerySection() {
         alt="Gallery Background"
         layout="fill"
         objectFit="cover"
-        className="z-0 opacity-30"
+        className="z-0 opacity-30 animate-fade-in"
         priority
       />
       <div className="absolute inset-0 bg-black/40 z-0" />
@@ -165,7 +165,7 @@ export function GallerySection() {
         {/* Header */}
         <div className="text-center mb-16">
           <MultiLineTypewriter lines={sectionTitle} loop={false} />
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up animate-delay-300">
             Explore the beauty of Apple Haven Inn and the stunning landscapes of Kashmir through our curated collection
             of photographs.
           </p>
@@ -173,16 +173,16 @@ export function GallerySection() {
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {categories.map((category) => (
+          {categories.map((category, index) => (
             <Button
               key={category.id}
               variant={selectedCategory === category.id ? "default" : "outline"}
               onClick={() => setSelectedCategory(category.id)}
-              className={
+              className={`animate-stagger-${index + 1} ${
                 selectedCategory === category.id
                   ? "bg-gradient-to-r from-red-600 to-orange-500 text-white"
                   : "border-red-200 text-red-600 hover:bg-red-50"
-              }
+              }`}
             >
               {category.name}
             </Button>
@@ -194,14 +194,14 @@ export function GallerySection() {
           {filteredImages.map((image, index) => (
             <Card
               key={image.id}
-              className="overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border-0"
+              className={`overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border-0 animate-stagger-${(index % 6) + 1}`}
               onClick={() => openLightbox(index)}
             >
               <div className="relative h-64">
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                 />
                 {/* COMING SOON overlay for placeholder images */}
                 {image.src === "/placeholder.jpg" && (
@@ -282,4 +282,4 @@ export function GallerySection() {
       </div>
     </div>
   )
-} 
+}
