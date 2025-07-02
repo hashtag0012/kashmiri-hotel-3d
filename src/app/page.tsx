@@ -192,4 +192,5 @@ export default function AppleHavenInn() {
       </div>
     </div>
   )
+  )
 }
