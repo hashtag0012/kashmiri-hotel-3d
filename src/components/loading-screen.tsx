@@ -9,15 +9,6 @@ export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Pop up for 9.3s, then slide out right for 0.7s (total 10s)
-    timeoutRef.current = setTimeout(() => {
-      setSlideOut(true)
-      // After slide out, call onFinish
-      setTimeout(() => {
-        onFinish?.()
-      }, 700) // match slide out duration
-    }, 9300)
-
     const dotsInterval = setInterval(() => {
       setDots((prev) => (prev.length < 3 ? prev + "." : "."))
     }, 500)
@@ -25,6 +16,18 @@ export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       clearInterval(dotsInterval)
+    }
+  }, [])
+
+  // This function will be called when the 3D model finishes loading
+  useEffect(() => {
+    if (onFinish) {
+      // Set up the slide out animation
+      setSlideOut(true)
+      // Call onFinish after slide out animation completes
+      setTimeout(() => {
+        onFinish()
+      }, 700) // match slide out duration
     }
   }, [onFinish])
 
@@ -40,8 +43,8 @@ export function LoadingScreen({ onFinish }: { onFinish?: () => void }) {
         />
       </div>
       <p className="mt-8 text-lg text-gray-700 font-semibold text-center">
-        Loading the website, hold on tight{dots}
+        Loading the 3D experience{dots}
       </p>
     </div>
   )
-} 
+}

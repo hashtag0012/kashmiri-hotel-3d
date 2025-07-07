@@ -19,10 +19,12 @@ export default function AppleHavenInn() {
   const [isLoading, setIsLoading] = useState(true)
   const [modelLoaded, setModelLoaded] = useState(false)
 
-  const handleLoadingFinish = () => setIsLoading(false)
-
   const handleModelLoaded = useCallback(() => {
     setModelLoaded(true)
+    // Add a small delay to ensure smooth transition
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 500)
   }, [])
 
   const scrollToSection = (sectionId: string) => {
@@ -38,7 +40,7 @@ export default function AppleHavenInn() {
 
   return (
     <div className="min-h-screen">
-      {isLoading && <LoadingScreen onFinish={handleLoadingFinish} />}
+      {isLoading && <LoadingScreen />}
       
       <div className={isLoading ? "invisible" : "visible"}>
         {modelLoaded && <ChinarLeaves />}
@@ -191,6 +193,5 @@ export default function AppleHavenInn() {
         </footer>
       </div>
     </div>
-  )
   )
 }
