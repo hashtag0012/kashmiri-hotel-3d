@@ -26,12 +26,18 @@ const rooms = [
     comingSoon: false,
   },
   {
-    title: "More Rooms",
-    description: "New and exciting rooms are under preparation. Stay tuned for more options!",
-    image: "/placeholder.jpg",
-    price: "",
-    features: [],
-    comingSoon: true,
+    title: "Heritage Royal Suite",
+    description: "Luxurious suite with traditional Kashmiri design and modern amenities.",
+    image: [
+      "/rooms/WhatsApp Image 2025-07-05 at 17.47.59_8a5f6b1c.jpg",
+      "/rooms/WhatsApp Image 2025-07-05 at 17.47.19_b33283c7.jpg",
+      "/rooms/WhatsApp Image 2025-07-05 at 17.47.05_0ee1beed.jpg",
+    ],
+    price: "250",
+    features: ["1 King Bed", "Sleeps 2-3", "450 sq. ft.", "Skylight Window"],
+    rating: 4.8,
+    location: "Heritage Wing",
+    comingSoon: false,
   },
   {
     title: "More Rooms",
@@ -53,6 +59,7 @@ const roomFeatures = [
 export function RoomsSection() {
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [deluxeImageIdx, setDeluxeImageIdx] = useState(0)
+  const [heritageImageIdx, setHeritageImageIdx] = useState(0)
   const openBooking = () => setShowBookingModal(true)
   const closeBooking = () => setShowBookingModal(false)
 
@@ -65,8 +72,13 @@ export function RoomsSection() {
 
   // Helper for deluxe room image navigation
   const deluxeImages = Array.isArray(rooms[0].image) ? rooms[0].image : []
-  const handlePrev = () => setDeluxeImageIdx((prev) => (prev - 1 + deluxeImages.length) % deluxeImages.length)
-  const handleNext = () => setDeluxeImageIdx((prev) => (prev + 1) % deluxeImages.length)
+  const handleDeluxePrev = () => setDeluxeImageIdx((prev) => (prev - 1 + deluxeImages.length) % deluxeImages.length)
+  const handleDeluxeNext = () => setDeluxeImageIdx((prev) => (prev + 1) % deluxeImages.length)
+
+  // Helper for heritage room image navigation
+  const heritageImages = Array.isArray(rooms[1].image) ? rooms[1].image : []
+  const handleHeritagePrev = () => setHeritageImageIdx((prev) => (prev - 1 + heritageImages.length) % heritageImages.length)
+  const handleHeritageNext = () => setHeritageImageIdx((prev) => (prev + 1) % heritageImages.length)
 
   return (
     <section id="rooms" className="relative py-20 text-white overflow-hidden" style={{ backgroundColor: '#000000' }}>
@@ -105,7 +117,7 @@ export function RoomsSection() {
                     } animate-scale-in animate-delay-${index * 200}`}
                   >
                     <CardHeader className="pb-2">
-                      {/* If deluxe room, show mini-carousel */}
+                      {/* Deluxe room (index 0) with mini-carousel */}
                       {index === 0 && Array.isArray(room.image) ? (
                         <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
                           <Image
@@ -120,7 +132,7 @@ export function RoomsSection() {
                           
                           {/* Left arrow */}
                           <button
-                            onClick={handlePrev}
+                            onClick={handleDeluxePrev}
                             className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-orange-500/80 text-white rounded-full p-2 z-10 transition-all duration-300"
                             aria-label="Previous image"
                             type="button"
@@ -129,7 +141,7 @@ export function RoomsSection() {
                           </button>
                           {/* Right arrow */}
                           <button
-                            onClick={handleNext}
+                            onClick={handleDeluxeNext}
                             className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-orange-500/80 text-white rounded-full p-2 z-10 transition-all duration-300"
                             aria-label="Next image"
                             type="button"
@@ -142,6 +154,60 @@ export function RoomsSection() {
                               <span
                                 key={i}
                                 className={`inline-block w-2 h-2 rounded-full transition-all duration-300 ${i === deluxeImageIdx ? 'bg-orange-400 scale-125' : 'bg-white/40'}`}
+                              />
+                            ))}
+                          </div>
+                          
+                          {/* Room rating and location badges */}
+                          <div className="absolute top-3 left-3 flex gap-2">
+                            <Badge className="bg-orange-500/90 text-white border-0 flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-current" />
+                              {room.rating}
+                            </Badge>
+                            <Badge className="bg-blue-500/90 text-white border-0 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {room.location}
+                            </Badge>
+                          </div>
+                        </div>
+                      ) : 
+                      /* Heritage room (index 1) with mini-carousel */
+                      index === 1 && Array.isArray(room.image) ? (
+                        <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
+                          <Image
+                            src={room.image[heritageImageIdx]}
+                            alt={room.title}
+                            fill
+                            className="object-cover transition-all duration-500 hover:scale-110"
+                            style={{ objectPosition: 'center' }}
+                          />
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          
+                          {/* Left arrow */}
+                          <button
+                            onClick={handleHeritagePrev}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-orange-500/80 text-white rounded-full p-2 z-10 transition-all duration-300"
+                            aria-label="Previous image"
+                            type="button"
+                          >
+                            <ChevronLeft className="w-6 h-6" />
+                          </button>
+                          {/* Right arrow */}
+                          <button
+                            onClick={handleHeritageNext}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-orange-500/80 text-white rounded-full p-2 z-10 transition-all duration-300"
+                            aria-label="Next image"
+                            type="button"
+                          >
+                            <ChevronRight className="w-6 h-6" />
+                          </button>
+                          {/* Dots indicator */}
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {room.image.map((_, i) => (
+                              <span
+                                key={i}
+                                className={`inline-block w-2 h-2 rounded-full transition-all duration-300 ${i === heritageImageIdx ? 'bg-orange-400 scale-125' : 'bg-white/40'}`}
                               />
                             ))}
                           </div>
